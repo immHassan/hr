@@ -1,0 +1,15 @@
+export const AUTH_LOGGING_IN_ERROR = '[AUTH] LOGGING_IN_ERROR';
+export const AUTH_LOGGING = '[AUTH] LOGGING';
+
+
+export const LOGIN_DATA = '[AUTH] LOGGING';
+export const LOGIN_ERROR = '[AUTH] LOGIN_ERROR';
+
+export const CANDIDATES_DATA = 'CANDIDATES DATA';
+export const CANDIDATES_ERROR = 'CANDIDATES ERROR';
+export const CANDIDATE_DATA = 'CANDIDATE DATA';
+export const CANDIDATE_ERROR = 'CANDIDATE ERROR';
+export const DELETE_DATA = 'DELETE_DATA';
+export const DELETE_ERROR = 'DELETE_ERROR';
+export const MANAGER_DATA = 'MANAGER_DATA';
+export const MANAGER_ERROR = 'MANAGER_ERROR';
