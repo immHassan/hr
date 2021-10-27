@@ -1,6 +1,4 @@
-import axios from 'axios';
 import { useEffect, useState } from "react"
-import { baseUrl } from "../../Services/config.json"
 import { FaRegEdit } from 'react-icons/fa';
 import { AiFillDelete, AiFillEye } from 'react-icons/ai';
 import * as actions from './../../Store/Actions';
@@ -19,13 +17,15 @@ import { hospital } from "../../config/axios"
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useMemo } from 'react';
 
 
-
-
-
-function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,deleteDataById,getManagers,managerData }) {
-    const [modalShow, onChangeModalShow] = useState(false)
+function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,deleteDataById,getManagers,managerData,UpdateById }) {
+    const [modalShow, onChangeModalShow] = useState(false)    
+    const [data, setData] = useState([])
+    const [userRole, setUserRole] = useState([""])
+    const [managers, setManagers] = useState([])
+    const [deleteId, setDeleteId] = useState("")
 
   const handleClose = () => onChangeModalShow(false);
   const handleShow = () => onChangeModalShow(true);
@@ -33,13 +33,18 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
     useEffect(() => {
         getCandidates();        
         getManagers();
+
+        const userData = localStorage.getItem('userData');
+        if(userData){
+            const parse = JSON.parse(userData)
+            setUserRole(parse.role)
+        }else{
+            setUserRole("admin")
+        }
+
     }, [])
 
 
-    const [data, setData] = useState([])
-    const [managers, setManagers] = useState([])
-    
-    const [deleteId, setDeleteId] = useState("")
     
 
     useEffect(() => {
@@ -51,7 +56,7 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
 
     }, [candidateData])
 
-    useEffect(() => {
+    const managerMemo = useMemo(() => {
         if (managerData.success) {
             console.log(managerData.data);
             setManagers(managerData.data)
@@ -61,8 +66,6 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
 
     }, [managerData])
 
-
-    
 
 
   
@@ -105,9 +108,9 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
                                             <th scope="col">HR Status</th>
                                             <th scope="col">Manager Status</th>
                                             <th scope="col">CEO Status</th>
-                                            <th scope="col">Action</th>                                      
-                                            <th scope="col">Assign Manager</th>                                            
-                                        
+                                            <th scope="col">Action</th>                 
+                                            {userRole!="manager"?<th scope="col">Assign Manager</th>:''}
+                                                                                                                             
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -129,35 +132,48 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
                                                     <td>{item.manager_status}</td>
                                                     <td>{item.ceo_status}</td>
                                                     <td>
-                                                        <a onClick={() => {
-                                                            history.push(`/candidate/${item.candidates_id}`);
-                                                            getCandidateById(item.candidates_id)
+                                                        <a onClick={() => {                                                            
+                                                            getCandidateById(item.candidates_id).then(()=>{  history.push(`/candidate/${item.candidates_id}`); })
                                                         }} > < AiFillEye /> </a>
+                                                       
+                                                       
+                                                       {userRole!="manager"?
                                                         <a onClick={() => {
                                                             history.push(`/candidate/edit/${item.candidates_id}`);
                                                             getCandidateById(item.candidates_id)
-                                                        }}  >< FaRegEdit/>  </a>
-                                                        <a onClick={()=>{ setDeleteId(item.candidates_id); handleShow(); }} >< AiFillDelete/> </a>   </td>
-                                                    
-                                                    <td> <select class="form-control" > 
-                                                    
-                                                    
+                                                        }}  >< FaRegEdit/>  </a> : ''}
+
+                                                        {userRole!="manager"?
+                                                        <a onClick={()=>{ setDeleteId(item.candidates_id); handleShow(); }} >< AiFillDelete/> </a>  
+                                                        : ''}
+                                                        </td>
                                                         
+                                                            
+                                                        {userRole!="manager"?
+                                                    <td>
+                                                         <select class="form-control" onChange={(e)=> { UpdateById("update_by_id",item.candidates_id,{'manager_id':e.target.value}).then(()=>{getCandidates();}) }}>
+                                                
                                                         {managers.map((item1, i) => {
-                                                            if(item.manager_id == item1.master_admin_id){
-                                                                console.log("hoja")
-                                                                return(
-                                                                    <option value={item1.master_admin_id} selected  > {item1.fullName}</option>
-                                                                )
-                                                            }else{
-                                                                console.log("nokr")
-                                                                return(
-                                                                    <option value={item1.master_admin_id}  > {item1.fullName}</option>
-                                                                )
-                                                            }
-                                                        })}
+
+                                                              if(item1.role == "manager" ){                                                                    
+                                                                    if(item.manager_id == item1.master_admin_id){
+                                                                        return (
+                                                                            <option  selected value={item1.master_admin_id} 
+                                                                            > {item1.fullName}</option>
+                                                                            )    
+                                                                    }else{  
+                                                                        return (
+                                                                            <option  value={item1.master_admin_id} 
+                                                                            > {item1.fullName}</option>
+                                                                            )
+                                                                    }
+                                                                }
+                                                        
+                                                            })}
+
+
                                                         </select> 
-                                                    </td>
+                                                    </td>: ''}
 
                                                 </tr>
                                             )
@@ -171,13 +187,7 @@ function Candidates({ getCandidates, candidateData, getCandidateById,DeleteById,
                 </div>
             </div>
         </div>
-
-
-
-            {/* /////modal */}
-
         <div>
-      {/* <button onClick={openModal}>Open Modal</button> */}
       <Modal
         show={modalShow}
         onHide={handleClose}
@@ -212,16 +222,3 @@ const mapStatetoProps = ({ candidateData,deleteDataById,managerData }) => {
     return { candidateData,deleteDataById,managerData }
 }
 export default connect(mapStatetoProps, actions)(Candidates)
-
-
-// {managers.map((item1, i) => {
-
-
-//     return (
-        
-//             <option value={item.manager_id == item1.master_admin_id?'selected':''} selected={
-                
-//                     item.manager_id == item1.master_admin_id?'selected':'' 
-//             } >{item1.fullName}</option>
-//         )
-//     })}

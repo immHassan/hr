@@ -97,7 +97,6 @@ function Candidate() {
     function postCandidate(){
 
         axios.post(`${baseUrl}/home/candidates`,fields).then((res)=>{
-                console.log(res.data);
                 toast.success("Candidate created successfully")
                 history.push("/candidates");
         })

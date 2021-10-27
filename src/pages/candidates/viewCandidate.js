@@ -4,32 +4,28 @@ import {
     useParams
   } from "react-router-dom";
 import {useEffect, useState, useMemo} from "react"
-
-import {hospital} from "../../config/axios"
-import {AddEmployment} from "../candidates/addEmployment"
-import {AddPersonal} from "../candidates/addPersonal"
-import maxLength30 from "../../utils/maxLength30";
-import axios from "axios";
-import {baseUrl} from "../../Services/config.json"
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
 import * as actions from './../../Store/Actions';
 import {connect} from "react-redux";
 
 
 
 
-
-function Candidate({candidateDataById}) {
+function Candidate({getCandidateById,candidateDataById,updateRemarks}) {
 
     const params = useParams();
-    // useMemo(() => {
-    //     getCandidateById(params.id);
-    // },[])
-    
+    const ust = useMemo(()=>{
+        getCandidateById(params.id)
+
+        
+        
+    },[])
+    const [userRole, setUserRole] = useState([""])
+
+    const [remarks, setRemarks] = useState("");
+    const [status, setStatus] = useState("");
+
+
     const [fields,setFields]=useState({
         fullName:"",
         employementHistory:[
@@ -47,16 +43,41 @@ function Candidate({candidateDataById}) {
         return arr
     }
     
-  
+
+    console.log("fields.hr_status",fields.hr_status);
+
         useEffect(() => {
-            if(candidateDataById.data){
+
+            // getCandidateById(params.id)
+
+            if(candidateDataById?.success){
                 setFields(candidateDataById.data);
             }
+            
+            const userData = localStorage.getItem('userData');
+            if(userData){
+                const parse = JSON.parse(userData)
+                
+                    if(parse.role == "hr" ){
+                        setRemarks(candidateDataById?.data?.hr_remarks);
+                        setStatus(candidateDataById?.data?.hr_status);
+                    }else if(parse.role == "admin" ){
+                        setRemarks(candidateDataById?.data?.admin_remarks);
+                        setStatus(candidateDataById?.data?.admin_status);
+                    }else if(parse.role == "manager"){
+                        setRemarks(candidateDataById?.data?.manager_remarks);
+                        setStatus(candidateDataById?.data?.manager_status);
+                       }
+
+                setUserRole(parse.role)
+            }else{
+                setUserRole("admin")
+            }
+            
         }, [candidateDataById])
 
-
-
     
+
 
     return (
      
@@ -415,7 +436,125 @@ function Candidate({candidateDataById}) {
                                               </table>
                                           </div>
                                           
-                                          </div>
+                                    </div>
+
+
+                                
+                                    <div class="col-12">
+                                                <hr/>
+                                     <h2 className="mb-5 "> Management Remarks </h2>
+
+                                     <h3 className="mb-2"> HR Remarks </h3>
+                                     <div class="col-12">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Remarks for candidate</label>
+                                                <textarea  disabled={userRole=="hr"?false :true }  rows="4" cols="50" onChange={ (e)=>{ setRemarks(e.target.value) }} 
+                                                 placeholder=""   defaultValue={fields.hr_remarks} 
+                                             class="form-control">
+                                            </textarea>
+                                            
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Candidate Status</label>
+                                               
+                                                    <select disabled={userRole=="hr"?false :true } class="form-control"  onChange={ (e)=>{ 
+                                                        setStatus(e.target.value);
+                                                        setFields({...fields,hr_status:e.target.value});
+                                                         }} value={ fields.hr_status} >                                                  
+                                                            <option value="schedule">Schedule</option>
+                                                            <option value="pending">Pending</option>
+                                                            <option value="declined" >Declined</option>
+                                                            <option value="approved" >Approved</option>
+                                                    </select>
+                                            </div>
+                                            
+                                            {userRole=="hr"?
+                                            <div class="add_button ml-10 text-right">
+                                                <a  data-toggle="modal" onClick={() => {   updateRemarks(fields.candidates_id,status,remarks).then(()=>{ getCandidateById(fields.candidates_id) }) } } class="btn_1">Update</a>
+                                            </div>
+                                            :''}
+
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-12">
+                                     <h3 className="mb-2"> Manager Remarks </h3>
+                                     <div class="col-12">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Remarks for candidate</label>
+                                                <textarea  disabled={userRole=="manager"?false :true }   rows="4" cols="50" placeholder="" 
+                                                
+                                                defaultValue={fields.manager_remarks} 
+                                                onChange={ (e)=>{ setRemarks(e.target.value) }} 
+                                                 class="form-control">
+                                            </textarea>
+                                            
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Candidate Status</label>
+                                                        
+                                                    <select disabled={userRole=="manager"?false :true }  class="form-control"  onChange={ (e)=>{ 
+                                                        setStatus(e.target.value);
+                                                        setFields({...fields,manager_status:e.target.value}) }} value={fields.manager_status} >
+                                                            <option value="pending">Pending</option>
+                                                            <option value="declined" >Declined</option>
+                                                            <option value="approved" >Approved</option>
+                                                    </select>
+                                            </div>
+
+                                            
+                                            {userRole=="manager"?
+
+                                            <div class="add_button ml-10 text-right">
+                                                <a  onClick={() => {   updateRemarks(fields.candidates_id,status,remarks).then(()=>{ getCandidateById(fields.candidates_id) }) } }   class="btn_1">Update</a>
+                                            </div>
+                                            :''}
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <div class="col-12">
+                                     <h3 className="mb-2"> CEO Remarks </h3>
+                                     <div class="col-12">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Remarks for candidate</label>
+                                                <textarea disabled={userRole=="admin"?false :true }  onKeyUp={ (e)=>{ setRemarks(e.target.value); }}  defaultValue={fields.ceo_remarks}  rows="4" cols="50" placeholder="" 
+                                             class="form-control">
+                                            </textarea>
+                                            
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Candidate Status</label>
+                                                    
+
+                                                 
+
+                                                        <select  disabled={userRole=="admin"?false :true } onChange={ (e)=>{ setStatus(e.target.value);  setFields({...fields,ceo_status:e.target.value}) }} value={fields.ceo_status}   class="form-control">
+                                                            <option value="pending">Pending</option>
+                                                            <option value="declined" >Declined</option>
+                                                            <option value="approved" >Approved</option>
+                                                        </select>
+                                            </div>
+                                            {userRole=="admin"?
+                                            <div class="add_button ml-10 text-right">
+                                                <a onClick={() => {   updateRemarks(fields.candidates_id,status,remarks).then(()=>{ getCandidateById(fields.candidates_id) }) } }  class="btn_1">Update</a>
+                                            </div>
+                                            :''}
+
+                                        </div>
+                                    </div>
+
+
+
+
+
 
 
                                 </div>
@@ -424,11 +563,18 @@ function Candidate({candidateDataById}) {
                   </div>
                   
   
+
+  
+                                    
+
   
   
           </div>
       </div>
     </div>  
+
+    
+
     );
   }
   

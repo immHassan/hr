@@ -1,12 +1,10 @@
 
 const Token = ()=>{
-
-    if(localStorage.getItem('userData')){
-        return JSON.parse(localStorage.getItem('userData')).token; 
-    }else{
-            return "zzzz";        
+    const userData = localStorage.getItem('userData');
+    if(userData){
+        const parse = JSON.parse(userData);
+        return  parse.token;          
     }
-
 };
 
 export default Token

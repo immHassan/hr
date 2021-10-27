@@ -9,7 +9,11 @@ import {
     DELETE_DATA,
     DELETE_ERROR,
     MANAGER_DATA,
-    MANAGER_ERROR
+    MANAGER_ERROR,
+    UPDATE_BY_ID,
+    UPDATE_BY_ID_ERROR,
+    DASHBOARD_DATA,
+    DASHBOARD_ERROR
 } from '../Actions/actionType'
 
 const initialState= {
@@ -64,11 +68,6 @@ export function deleteDataById(state=null,action){
     }
 }
 
-
-
-
-
-
 export function managerData(state=initialState,action){
     switch(action.type){
         case MANAGER_DATA:
@@ -80,6 +79,32 @@ export function managerData(state=initialState,action){
     }
 }
 
+
+
+export function UpdateByIdData(state=initialState,action){
+    switch(action.type){
+        case UPDATE_BY_ID:
+            return action.payload;
+        case UPDATE_BY_ID_ERROR:
+            return action.payload;
+        default:
+            return state
+    }
+}
+
+const initailStateDash={
+}
+
+export function DashboardData(state=initailStateDash,action){
+    switch(action.type){
+        case DASHBOARD_DATA:
+            return action.payload;
+        case DASHBOARD_ERROR:
+            return action.payload;
+        default:
+            return state
+    }
+}
 
 
 

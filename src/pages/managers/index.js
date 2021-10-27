@@ -9,33 +9,55 @@ import {
   } from "react-router-dom";
 import {useEffect,useState} from "react"
 
-import {hospital} from "../../config/axios"
-function Managers() {
+
+import * as actions from '../../Store/Actions';
+import { connect } from "react-redux";
+
+import { Modal, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 
-
+function Managers({DeleteById,deleteDataById,managerData,getManagers}) {
 
 
 
     
+
+
+
     const [data,setData]=useState([])
-
     
-    useEffect(()=>{
-        getUser()
-    },[])
+
+    useEffect(() => {
+        if (managerData.success) {
+            setData(managerData.data)
+        } else {
+            setData([])
+        }
+
+    }, [managerData])
+
 
     function getUser(){
 
         axios.get(`${baseUrl}/home/users`).then((res)=>{
-            setData(res.data.data) 
+            
         })
     
     }
     var history = useHistory();
 
+    
+                  
+    
+    
+   const [modalShow, onChangeModalShow] = useState(false)
+  const handleClose = () => onChangeModalShow(false);
+  const handleShow = () => onChangeModalShow(true);
 
-                             
+
+    const [deleteId, setDeleteId] = useState("")
+
 
        
     return (
@@ -91,8 +113,11 @@ function Managers() {
                                                 <td>{item.designation}</td>
                                                 <td>{item.role}</td>
                                                 <td>  
-                                                    <a href={`#${item.candidates_id}`} > <FaRegEdit /> </a> 
-                                                    <a href="#{item.candidates_id}" ><AiFillDelete />  </a>                                                     
+                                                    <a href={`#${item.master_admin_id}`} > <FaRegEdit /> </a> 
+                                                   
+                                                    <a onClick={()=>{ setDeleteId(item.master_admin_id); handleShow(); }} >< AiFillDelete/> </a> 
+                                                    
+                                                    
                                                     <a href="#{item.candidates_id}" ><AiFillEye /> </a>   </td>
                                                 </tr>
                                                 )})}
@@ -105,9 +130,37 @@ function Managers() {
                 </div>
             </div>
         </div>
-    </div>
+    
+        <Modal
+        show={modalShow}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+       
+      >
+       <Modal.Header>
+          <Modal.Title>Alert</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+                Are you sure you want to delete this record
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={()=> DeleteById('manager',deleteId).then(()=>{ getManagers(); handleClose();  
+                toast.success("Deleted Successfully");   }) }>Yes</Button>
+        </Modal.Footer>
+      </Modal>
 
+    
+    </div>
     );
   }
   
-  export default Managers;
+const mapStatetoProps = ({ deleteDataById,managerData }) => {
+    return {deleteDataById,managerData }
+}
+export default connect(mapStatetoProps, actions)(Managers)
+
+

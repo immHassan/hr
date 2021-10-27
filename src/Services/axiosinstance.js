@@ -6,9 +6,6 @@ import Token from "../Services/jwtToken"
 
 // 
 export default axios.create({
-    baseURL: baseUrl,
-    headers:{
-        "Authorization":Token()
-    }
+    baseURL: baseUrl
 });
 

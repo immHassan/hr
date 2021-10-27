@@ -9,7 +9,16 @@ import * as actions from './../Store/Actions/';
 import {connect} from "react-redux";
 import {useEffect,useState} from "react"
 import { toast } from "react-toastify";
-
+ const avatar= {
+    height: '75px',
+    width: '75px',
+    borderRadius: '50%',
+    backgroundColor: '#cececec7',
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center'
+ }
 
 function UpperNav({LoginUser}) {
 
@@ -20,15 +29,29 @@ function UpperNav({LoginUser}) {
 
 
     useEffect(() => {
-        if(LoginUser.success){
-            console.log("LoginUser.data.fullName",LoginUser.data.fullName);
-                setUserName(LoginUser.data.fullName);  
-                setUserDesignation(LoginUser.data.role); 
+        const userData = localStorage.getItem('userData');
+        if(userData){
+            const parse = JSON.parse(userData)            
+            setUserName(parse.fullName);  
+            setUserDesignation(parse.role); 
         }
+
     }, [LoginUser])
 
 
 
+    function getAvatarName(userName) {  
+        if(userName.length >0){
+            var userArr= userName?.split(' '); 
+           var avatarName = userArr[0]?.slice(0,1);
+            if(userArr[1]?.slice(0,1) != undefined){
+                avatarName+= userArr[1]?.slice(0,1)
+            }
+            
+            return avatarName;
+        }
+        return false;
+    }
 
     const history=useHistory()
     return (
@@ -59,7 +82,12 @@ function UpperNav({LoginUser}) {
                              </li>
                          </div>
                          <div className="profile_info">
-                             <img src={client_img} alt="#"/>
+                             {!client_img?
+                                <img src={client_img} alt="#"/>     
+                                :
+                                <div className="avatar" style={avatar} > <h3 className="mb-0"> {getAvatarName(userName)}</h3></div>
+                             }
+
                              <div className="profile_info_iner">
                                  <p> {userName} </p>
                                  <h5>{userDesignation} </h5>

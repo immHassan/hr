@@ -12,6 +12,7 @@ import maxLength30 from "../../utils/maxLength30";
 
 import axios from "axios";
 import {baseUrl} from "../../Services/config.json"
+import { toast } from "react-toastify";
 function Candidate() {
     const [progress, onChangeProgress] = useState(null)
     const [submit,setSubmit]=useState(false)
@@ -29,8 +30,6 @@ function Candidate() {
     
     function next(){
         setSubmit(true)
-
-
                 if(fields.fullName && fields.email && fields.password && fields.presentAddress && fields.designation && fields.role){
                     if(fields.password ==  fields.cPassword){
                         postManager();
@@ -38,17 +37,19 @@ function Candidate() {
                 }
     }
 
-
-    
-
     function postManager(){
 
         axios.post(`${baseUrl}/home/user`,fields).then((res)=>{
-                console.log(res.data);
+          
+            if(res.data.success){
+                toast.success(res.data.message)
+                history.push("/managers");    
+            }else{
+                toast.error(res.data.message)
+                history.push("/managers");    
+            }
+           
         })
-
-                console.log("Manager added successfully")
-
     }
 
 
@@ -89,7 +90,6 @@ function Candidate() {
                                             <input type="email" class="form-control"
                                             
                                             style={{borderColor:submit && !fields.email?'red':""}}
-                                            onChange={(e)=> getValue('email',e.target.value) }  
                                             
                                             value={fields.email}   onChange={(e)=> getValue('email',e.target.value) }   id="exampleFormControlInput1" placeholder="name@example.com"/>
                                         
@@ -101,12 +101,10 @@ function Candidate() {
 
                                     <div class="form-group">
                                         <label for="exampleFormControlInput1">Password</label>
-                                        <input type="number" value={fields.password}  class="form-control" 
+                                        <input type="password" value={fields.password}  class="form-control" 
                                         
                                         style={{borderColor:submit && !fields.password?'red':""}}
-                                        onChange={(e)=> getValue('password',e.target.value) }  
-
-                                        onChange={(e)=> getValue('password',e.target.value) } id="exampleFormControlInput1" placeholder="i.e ds#%$$2sq "/>
+                                        onChange={(e)=> getValue('password',e.target.value) }   id="exampleFormControlInput1" placeholder="i.e ds#%$$2sq "/>
 
                                         {submit && maxLength30(fields.fullName)?<p style={{color:'red'}}>Invalid length </p>:null}
                                     </div>
@@ -117,12 +115,10 @@ function Candidate() {
                                     
                                     <div class="form-group">
                                         <label for="exampleFormControlInput1">Confrim Password</label>
-                                        <input type="number" value={fields.cPassword}  class="form-control" 
+                                        <input type="password" value={fields.cPassword}  class="form-control" 
                                         
                                         style={{borderColor:submit && !fields.cPassword?'red':""}}
-                                        onChange={(e)=> getValue('cPassword',e.target.value) }  
-
-                                        onChange={(e)=> getValue('cPassword',e.target.value) } id="exampleFormControlInput1" placeholder="i.e ds#%$$2sq"/>
+                                        onChange={(e)=> getValue('cPassword',e.target.value) }   id="exampleFormControlInput1" placeholder="i.e ds#%$$2sq"/>
 
                                         {submit && maxLength30(fields.cPassword)?<p style={{color:'red'}}>Invalid length </p>:null}
 
@@ -138,7 +134,6 @@ function Candidate() {
                                             <textarea  rows="4" cols="50" placeholder=""
                                             
                                             style={{borderColor:submit && !fields.presentAddress?'red':""}}
-                                            onChange={(e)=> getValue('presentAddress',e.target.value) }  
                                             
                                             onChange={(e)=> getValue('presentAddress',e.target.value) }  class="form-control">
                                             {fields.presentAddress}   
@@ -154,11 +149,9 @@ function Candidate() {
 
                                     <div class="form-group">
                                         <label for="exampleFormControlInput1">Designation</label>
-                                        <input type="number" value={fields.designation}  class="form-control" 
+                                        <input type="text" value={fields.designation}  class="form-control" 
                                         
                                         style={{borderColor:submit && !fields.designation?'red':""}}
-                                        onChange={(e)=> getValue('designation',e.target.value) }  
-
                                         onChange={(e)=> getValue('designation',e.target.value) } id="exampleFormControlInput1" placeholder="i.e Associate Manager"/>
 
                                         {submit && maxLength30(fields.designation)?<p style={{color:'red'}}>Invalid length </p>:null}
@@ -180,9 +173,9 @@ function Candidate() {
 
 
                                         onChange={(e)=> getValue('role',e.target.value) }   id="exampleFormControlSelect1">
-                                            <option>Admin</option>
-                                            <option>Manager</option>
-                                            <option>HR</option>
+                                            <option value="admin" >Admin</option>
+                                            <option value="manager" >Manager</option>
+                                            <option value="hr">HR</option>
                                         </select>
                                         
                                         {submit && maxLength30(fields.role)?<p style={{color:'red'}}>Invalid length </p>:null}

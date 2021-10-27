@@ -42,7 +42,6 @@ function Dashboard({Login, LoginUser}) {
     useEffect(() => {
        
         if(LoginUser.success){
-            localStorage.setItem('userData',JSON.stringify(LoginUser.data));   
             toast.success(LoginUser.message)
         }else{
             toast.error(LoginUser.message)

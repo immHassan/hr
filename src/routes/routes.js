@@ -12,6 +12,7 @@ import Manager from '../pages/managers/add'
 import Login from '../pages/login'
 import * as actions from './../Store/Actions';
 import {connect} from "react-redux";
+import axios from '../Services/axiosinstance'
 
 function Routes({LoginUser}) {
     const [token, setToken] = useState(null)
@@ -32,7 +33,8 @@ function Routes({LoginUser}) {
         if(userData){
             const parse = JSON.parse(userData)
             setToken(parse.token)
-            console.log(parse.token, "TOKEN")
+            axios.defaults.headers.common['Authorization']= parse.token;   
+            
         }
     }, [LoginUser])
 
@@ -46,7 +48,7 @@ function Routes({LoginUser}) {
                     <UpperNave/>
                     <Route path="/login" component={()=><Redirect to="/dashboard"/>}/>
                     <Route exact path="/dashboard" component={Dashboard}/> 
-                     <Route exact path="/" component={Dashboard}/>  
+                    <Route exact path="/" component={Dashboard}/>  
                     <Route path="/candidates" component={Candidates}/>                    
                     <Route path="/add/candidate" component={Candidate}/>   
                     <Route path="/candidate/:id" component={CandidateById}/>
@@ -57,7 +59,7 @@ function Routes({LoginUser}) {
 
             </section>:
            <>
-            <Route path="/" component={()=><Redirect to="/login"/>}/>
+            <Route  path="/" component={()=><Redirect to="/login"/>}/>
             <Route exact path="/login" component={Login}/>
            </> 
         }

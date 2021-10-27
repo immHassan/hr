@@ -10,9 +10,32 @@ import  menuicon5 from "../Assets/img/menu-icon/5.svg";
 import  menuicon6 from "../Assets/img/menu-icon/6.svg";
 import  menuicon7 from "../Assets/img/menu-icon/7.svg";
 import {Link} from "react-router-dom"
+import { useEffect, useState } from "react"
+
+
 
 
 function SideNav() {
+
+
+  
+  const [userRole, setUserRole] = useState([""])
+
+  useEffect(() => {
+   
+      const userData = localStorage.getItem('userData');
+      if(userData){
+          const parse = JSON.parse(userData)
+          setUserRole(parse.role)
+      }else{
+          setUserRole("admin")
+      }
+
+  }, [])
+
+
+
+
     return (
       <nav class="sidebar">
       <div class="logo d-flex justify-content-between">
@@ -52,6 +75,7 @@ function SideNav() {
 
 
 
+          {userRole!= "manager"? 
           <Link to="/managers">
           <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
@@ -59,9 +83,9 @@ function SideNav() {
               <span>Managers</span>
             </a>
           </li>
-          </Link>
+          </Link>:''}
 
-
+          {userRole!= "manager"? 
           <Link to="/roles">
           <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
@@ -69,10 +93,10 @@ function SideNav() {
               <span>Roles</span>
             </a>
           </li>
-          </Link>
+          </Link> :''}
 
 
-
+{/* 
 
           <li class="">
             <a   class="has-arrow" href="#" aria-expanded="false">
@@ -107,7 +131,7 @@ function SideNav() {
               <img src={menuicon7} alt=""/>
               <span>Pages</span>
             </a>
-          </li>
+          </li> */}
 
   
   

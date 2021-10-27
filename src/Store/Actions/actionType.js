@@ -13,3 +13,14 @@ export const DELETE_DATA = 'DELETE_DATA';
 export const DELETE_ERROR = 'DELETE_ERROR';
 export const MANAGER_DATA = 'MANAGER_DATA';
 export const MANAGER_ERROR = 'MANAGER_ERROR';
+
+export const UPDATE_BY_ID = 'UPDATE_BY_ID';
+export const UPDATE_BY_ID_ERROR = 'UPDATE_BY_ID_ERROR';
+
+export const DASHBOARD_DATA = 'DASHBOARD_DATA';
+export const DASHBOARD_ERROR = 'DASHBOARD_ERROR';
+
+
+
+
+
